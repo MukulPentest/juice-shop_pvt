@@ -21,13 +21,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bash 'npm install --build-from-source'
             }
         }
 
         stage('Run App') {
             steps {
-                sh 'nohup npm start &'
+                bash 'nohup npm start &'
             }
         }
     }
