@@ -1,42 +1,23 @@
 pipeline {
     agent any
-
-    tools {
-        // Add relevant tools if needed, e.g., maven, node, etc.
-    }
-
+ 
     stages {
-        stage('Clone') {
+        stage('Clone from GitHub') {
             steps {
-                git credentialsId: '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', url: 'https://github.com/MukulPentest/juice-shop_pvt.git'
+                git url: 'https://github.com/MukulPentest/juice-shop_pvt.git'
             }
         }
-
-        stage('Build') {
+ 
+        stage('Install Dependencies') {
             steps {
-                sh 'echo "Building..."'
-                // Replace with actual build commands, e.g., npm install or mvn clean install
+                sh 'npm install'
             }
         }
-
-        stage('Test') {
+ 
+        stage('Run App') {
             steps {
-                sh 'echo "Running Tests..."'
-                // Replace with test commands
+                sh 'npm start &'
             }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'echo "Deploying..."'
-                // Your deployment script or command
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished'
         }
     }
 }
