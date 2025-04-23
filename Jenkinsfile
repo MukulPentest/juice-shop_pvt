@@ -9,9 +9,15 @@ pipeline {
     stages {
         stage('Clone from GitHub') {
             steps {
-                git url: 'https://github.com/MukulPentest/juice-shop_pvt.git'
+                git url: 'https://github.com/username/reponame.git'
             }
         }
+
+//        stage('Clean .npmrc if exists') {
+  //          steps {
+    //            sh 'rm -f .npmrc'  // only if you suspect it's causing issues
+      //      }
+        //}
 
         stage('Install Dependencies') {
             steps {
@@ -21,7 +27,7 @@ pipeline {
 
         stage('Run App') {
             steps {
-                sh 'npm start &'
+                sh 'nohup npm start &'
             }
         }
     }
