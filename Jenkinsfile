@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone from GitHub') {
             steps {
-                git url: 'https://github.com/username/reponame.git'
+                git url: 'https://github.com/MukulPentest/juice-shop_pvt.git'
             }
         }
 
