@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        npm_config_build_from_source = 'true'
-        npm_config_loglevel = 'verbose'
-    }
-
     stages {
         stage('Clone from GitHub') {
             steps {
