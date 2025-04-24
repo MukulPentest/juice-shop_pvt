@@ -18,7 +18,6 @@ pipeline {
         }
         stage('Build') {
             steps {
-                dir('check') { // <--- CHANGE to the directory containing package.json
                 sh 'pwd'
                 sh 'ls -la'
                 echo 'Running npm install...'
