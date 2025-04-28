@@ -9,7 +9,7 @@ pipeline {
         stage('Clone from GitHub') {
             steps {
                 echo "Cloning repository..."
-                git url: 'https://github.com/username/repo.git',
+                git url: 'https://github.com/MukulPentest/juice-shop_pvt.git',
                     branch: 'master', // Or your desired branch
                     credentialsId: 'github-username-pat' // Ensure this exists
             }
