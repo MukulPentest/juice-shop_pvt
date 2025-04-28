@@ -2,7 +2,7 @@ pipeline {
     agent any // Use any available agent on your localhost Jenkins
 
     tools {
-        nodejs 'NodeJS-18' // Match the name in Jenkins Global Tool Config
+        nodejs 'NodeJS-22' // Match the name in Jenkins Global Tool Config
         // Dependency-Check tool is specified via the 'installation' option later
     }
 
