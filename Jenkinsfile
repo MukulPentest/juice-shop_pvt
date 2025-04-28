@@ -17,7 +17,7 @@ pipeline {
 
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'nvdsecret')]) {
+                withCredentials([string(credentialsId: 'nvdsecret', variable: 'nvdsecret')]) {
                     
                     echo "Running OWASP Dependency-Check with NVD API Key..."
                     
