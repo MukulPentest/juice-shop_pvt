@@ -33,17 +33,26 @@ pipeline {
             }
         }
 
-        stage('Vulnerability Scan (Dependency-Check)') {
+        stage('npm Audit') {
             steps {
-                echo 'Running OWASP Dependency-Check...'
-                // Runs the scan using the globally configured tool ('Default-DC')
-                // Adjust parameters here if needed, e.g., data directory, suppression file
-                dependencyCheckAnalyzer()
-
-                // Publish the HTML report
-                dependencyCheckPublisher pattern: '**/dependency-check-report.html'
+                echo 'Running npm Audit...'
+                // Ensure npm from the NodeJS tool is in PATH
+                sh 'npm audit'
+                // Or use 'npm install' if 'npm ci' fails or package-lock.json is outdated/missing
+                // sh 'npm install'
             }
         }
+       // stage('Vulnerability Scan (Dependency-Check)') {
+         //   steps {
+           //     echo 'Running OWASP Dependency-Check...'
+                // Runs the scan using the globally configured tool ('Default-DC')
+                // Adjust parameters here if needed, e.g., data directory, suppression file
+              //  dependencyCheckAnalyzer()
+
+                // Publish the HTML report
+                //dependencyCheckPublisher pattern: '**/dependency-check-report.html'
+     //       }
+       // }
     }
 
     post {
