@@ -6,11 +6,7 @@ pipeline {
         // Dependency-Check tool is specified via the 'installation' option later
     }
 
-    environment {
-        // CYPRESS_INSTALL_BINARY=0 // uncomment if needed to potentially speed up npm install by skipping Cypress binary
-    }
-
-    options {
+   options {
         timestamps()
         // Specify the Dependency-Check tool installation configured in Global Tool Config
         dependencyCheck installation: 'OWASP-DC' // Match the name in Jenkins Global Tool Config
