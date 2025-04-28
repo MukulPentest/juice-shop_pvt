@@ -27,7 +27,7 @@ pipeline {
             steps {
                 echo 'Installing Node.js dependencies...'
                 // Ensure npm from the NodeJS tool is in PATH
-                sh 'npm ci' // Use 'npm ci' for clean install using package-lock.json
+                sh 'npm install' // Use 'npm ci' for clean install using package-lock.json
                 // Or use 'npm install' if 'npm ci' fails or package-lock.json is outdated/missing
                 // sh 'npm install'
             }
