@@ -17,6 +17,9 @@ pipeline {
 
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
+                // Retry 3 times if the block fails
+                retry(3) { 
+                    timeout(time: 120, unit: 'MINUTES') { 
                 withCredentials([string(credentialsId: 'nvdsecret', variable: 'nvdsecret')]) {
                     
                     echo "Running OWASP Dependency-Check with NVD API Key..."
@@ -36,6 +39,7 @@ pipeline {
                 } // End of withCredentials block
             }
         }
+            }
 
         stage('Install Dependencies') {
             steps {
@@ -68,12 +72,13 @@ pipeline {
             // Optional: Archive reports for viewing in Jenkins build artifacts
             archiveArtifacts artifacts: 'dependency-check-reports/**', allowEmptyArchive: true
             // cleanWs() // Optional: clean workspace
-        }
-        success {
-            echo 'Pipeline Succeeded'
-        }
-        failure {
-             echo 'Pipeline Failed'
+            }
+            success {
+                echo 'Pipeline Succeeded'
+            }
+            failure {
+                 echo 'Pipeline Failed'
+            }
         }
     }
 }
