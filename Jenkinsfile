@@ -6,11 +6,11 @@ pipeline {
         // Dependency-Check tool is specified via the 'installation' option later
     }
 
-   options {
-        timestamps()
+   //options {
+     //   timestamps()
         // Specify the Dependency-Check tool installation configured in Global Tool Config
-        dependencyCheck installation: 'OWASP-DC' // Match the name in Jenkins Global Tool Config
-    }
+       // dependencyCheck installation: 'OWASP-DC' // Match the name in Jenkins Global Tool Config
+   // }
 
     stages {
         stage('Checkout') {
