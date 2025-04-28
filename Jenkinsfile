@@ -39,7 +39,8 @@ pipeline {
                 } // End of withCredentials block
             }
         }
-            }
+    }
+}
 
         stage('Install Dependencies') {
             steps {
@@ -78,7 +79,6 @@ pipeline {
             }
             failure {
                  echo 'Pipeline Failed'
-            }
-        }
+         }
     }
-}
+ }
