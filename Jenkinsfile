@@ -22,7 +22,7 @@ pipeline {
                 echo 'Checking out code from GitHub...'
                 // Explicit git step is clearer for standard Pipeline jobs
                 git branch: 'master', // <<< CHANGE to your repo's main branch (e.g., 'main', 'master', 'develop')
-                    credentialsId: 'github-pat', // <<< CHANGE to your Jenkins credential ID for the GitHub PAT
+                    credentialsId: '5a8139db-21e5-446d-a31d-77f4daf60940', // <<< CHANGE to your Jenkins credential ID for the GitHub PAT
                     url: 'https://github.com/MukulPentest/juice-shop_pvt.git' // <<< CHANGE YOUR_USERNAME
             }
         }
