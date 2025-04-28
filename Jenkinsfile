@@ -1,51 +1,38 @@
 pipeline {
-    agent any // Use any available agent. Consider specific agents (e.g., docker) for better control.
+    agent any // Use any available agent on your localhost Jenkins
 
     tools {
-        nodejs 'NodeJS-22' // Use the NodeJS installation configured in Jenkins Global Tools
-        // The Dependency-Check plugin doesn't require a 'tools' entry here,
-        // it uses the configuration from Global Tools via its step.
+        nodejs 'NodeJS-18' // Match the name in Jenkins Global Tool Config
+        // Dependency-Check tool is specified via the 'installation' option later
     }
 
     environment {
-        // Optional: Define environment variables if needed
-        // Example: CYPRESS_INSTALL_BINARY=0 // Might be needed to skip Cypress binary download if not running e2e tests
+        // CYPRESS_INSTALL_BINARY=0 // uncomment if needed to potentially speed up npm install by skipping Cypress binary
     }
 
-   // options {
-        // Optional: Add build timestamps, disable concurrent builds, etc.
-     //   timestamps()
-       // disableConcurrentBuilds()
-        // Specify the Dependency-Check tool configured in Global Tool Config
-        // This helps the plugin find the scanner installation
-        //dependencyCheck installation: 'Default-DC'
-    //}
+    options {
+        timestamps()
+        // Specify the Dependency-Check tool installation configured in Global Tool Config
+        dependencyCheck installation: 'OWASP-DC' // Match the name in Jenkins Global Tool Config
+    }
 
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                // Uses the SCM definition from the Jenkins job configuration
-                // For Pipeline jobs, this often requires explicit git step if not using Multibranch
-                // For Multibranch, 'checkout scm' is implicit or can be used explicitly
-                 checkout scm
-                // OR, if using a standard Pipeline job and need explicit checkout:
-                /*
-                git branch: 'develop', // Or 'main', 'master', match your repo's default branch
-                    credentialsId: 'github-pat', // The ID you gave your GitHub PAT credential in Jenkins
-                    url: 'https://github.com/YOUR_USERNAME/juice-shop.git' // Replace YOUR_USERNAME
-                */
+                // Explicit git step is clearer for standard Pipeline jobs
+                git branch: 'master', // <<< CHANGE to your repo's main branch (e.g., 'main', 'master', 'develop')
+                    credentialsId: 'github-pat', // <<< CHANGE to your Jenkins credential ID for the GitHub PAT
+                    url: 'https://github.com/MukulPentest/juice-shop_pvt.git' // <<< CHANGE YOUR_USERNAME
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Node.js dependencies...'
-                // Make sure npm is available via the NodeJS tool
-                // Juice Shop uses npm ci for cleaner installs, requires package-lock.json
-                // If package-lock.json is missing, might need 'npm install' first
-                sh 'npm ci'
-                // If 'npm ci' fails, try 'npm install' (might modify package-lock.json)
+                // Ensure npm from the NodeJS tool is in PATH
+                sh 'npm ci' // Use 'npm ci' for clean install using package-lock.json
+                // Or use 'npm install' if 'npm ci' fails or package-lock.json is outdated/missing
                 // sh 'npm install'
             }
         }
@@ -53,9 +40,11 @@ pipeline {
         stage('Vulnerability Scan (Dependency-Check)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
-                dependencyCheckAnalyzer() // Runs the scan using configured settings
+                // Runs the scan using the globally configured tool ('Default-DC')
+                // Adjust parameters here if needed, e.g., data directory, suppression file
+                dependencyCheckAnalyzer()
 
-                // Publish the HTML report for easy viewing in Jenkins
+                // Publish the HTML report
                 dependencyCheckPublisher pattern: '**/dependency-check-report.html'
             }
         }
@@ -64,20 +53,17 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            // Clean up workspace if needed
-            // cleanWs()
+            // cleanWs() // Optional: clean workspace after build
         }
         success {
             echo 'Pipeline succeeded!'
-            // Add notifications (Slack, Email) if desired
         }
         failure {
             echo 'Pipeline failed!'
-            // Add notifications for failures
         }
         unstable {
             // Dependency-Check often marks the build as UNSTABLE if vulnerabilities are found
-            echo 'Pipeline unstable (vulnerabilities found?).'
+            echo 'Pipeline unstable (likely due to found vulnerabilities).'
         }
     }
 }
