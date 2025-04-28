@@ -2,8 +2,6 @@ pipeline {
     agent any
 
     tools {
-        // Make sure 'NodeJS-18' matches a NodeJS installation
-        // configured in Jenkins -> Global Tool Configuration
         nodejs 'NodeJS-22'
     }
 
@@ -11,51 +9,55 @@ pipeline {
         stage('Clone from GitHub') {
             steps {
                 echo "Cloning repository..."
-                // Replace with your actual URL, branch, and credential ID if repo is private
-                git url: 'https://github.com/MukulPentest/juice-shop_pvt.git',
+                git url: 'https://github.com/username/repo.git',
                     branch: 'master', // Or your desired branch
-                    credentialsId: 'github-username-pat' // <<< REQUIRED for private repos
+                    credentialsId: 'github-username-pat' // Ensure this exists
             }
         }
 
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'OWASP-DC'
-        
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: '4aa3d133-cf2b-41b9-8ab7-af8b8cab8ec7')]) {
+                    
+                    echo "Running OWASP Dependency-Check with NVD API Key..."
+                    
+                    dependencyCheck additionalArguments: """ // Using triple double quotes for multi-line string
+                        --nvdApiKey '${4aa3d133-cf2b-41b9-8ab7-af8b8cab8ec7}' // Pass the key securely
+                        --failOnCVSS 7 // Example: Optionally fail build on high severity CVEs
+                        -o './dependency-check-reports' // Output to a dedicated directory
+                        -s './' // Scan source/dependency files here
+                        -f 'ALL' // Generate all report formats (consider XML/HTML if sufficient)
+                        --prettyPrint
+                        """.stripIndent(), // stripIndent helps with readability of multi-line strings
+                        odcInstallation: 'OWASP-DC' // Ensure this matches your Jenkins Tool Configuration name
+
+                    // Update the pattern to match the output directory '-o'
+                    dependencyCheckPublisher pattern: 'dependency-check-reports/dependency-check-report.xml' 
+                } // End of withCredentials block
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo "Installing Node.js dependencies..."
-                // NodeJS tool ensures npm is in the PATH
-                sh 'npm install'
+                echo "Installing Node.js dependencies (using npm ci recommended)..."
+                // Consider using 'npm ci' for better reproducibility in CI
+                sh 'npm install' 
             }
         }
 
-        // stage('Run App') { // <<< RE-EVALUATE THIS STAGE
-        //     steps {
-        //         // Running in background like this is generally problematic in CI
-        //         // Consider what the actual goal of this stage is.
-        //         // If for testing: Start -> Run Tests -> Stop
-        //         // If for deployment: Deploy artifact elsewhere after build/test.
-        //         // sh 'npm start &'
-        //         echo "Skipping 'npm start &' as background processes are not ideal here."
-        //         echo "If you need to run tests against the app, structure accordingly."
-        //         echo "If you need to deploy, do it in a later stage or separate job."
-        //     }
-        // }
+        stage('Build Application') {
+             steps {
+                 echo "Building application..."
+                 // Assumes a 'build' script in package.json
+                 sh 'npm run build' 
+             }
+        }
 
-        // Example: Stage for running tests (if 'npm test' exists)
         stage('Run Tests') {
             steps {
                  echo "Running tests..."
-                 sh 'npm test' // Assumes your package.json has a 'test' script
+                 // Assumes your package.json has a 'test' script
+                 sh 'npm test' 
             }
         }
     }
@@ -63,7 +65,15 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
+            // Optional: Archive reports for viewing in Jenkins build artifacts
+            archiveArtifacts artifacts: 'dependency-check-reports/**', allowEmptyArchive: true
             // cleanWs() // Optional: clean workspace
+        }
+        success {
+            echo 'Pipeline Succeeded'
+        }
+        failure {
+             echo 'Pipeline Failed'
         }
     }
 }
