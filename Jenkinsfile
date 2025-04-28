@@ -23,16 +23,20 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing Node.js dependencies...'
-                // Ensure npm from the NodeJS tool is in PATH
-                sh 'npm install' // Use 'npm ci' for clean install using package-lock.json
-                // Or use 'npm install' if 'npm ci' fails or package-lock.json is outdated/missing
-                // sh 'npm install'
-            }
+            stage('Install Dependencies') {
+                steps {
+                    echo 'Attempting to remove potentially problematic node_modules directory...'
+                    // Add this line to clean before installing
+                    sh 'rm -rf node_modules'
+                    // It's also safe to remove the lock file if npm install is going to regenerate it anyway
+                    sh 'rm -f package-lock.json'
+    
+                    echo 'Installing Node.js dependencies...'
+                    // Now run npm install
+                    sh 'npm install'
+                }
         }
-
+        
         stage('npm Audit') {
             steps {
                 echo 'Running npm Audit...'
