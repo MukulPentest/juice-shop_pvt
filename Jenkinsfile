@@ -46,6 +46,18 @@ pipeline {
                  sh 'npm test' // Assumes your package.json has a 'test' script
             }
         }
+
+        stage('OWASP Dependency-Check Vulnerabilities') {
+            steps {
+                dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', odcInstallation: 'OWASP-DC'
+        
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
     }
 
     post {
