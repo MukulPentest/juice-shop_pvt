@@ -1,31 +1,15 @@
 pipeline {
-    agent any // Or specify a specific agent label
-
+    agent any // Or your specific agent
     tools {
-        // Use the 'Name' you configured in Global Tool Configuration
-        nodejs 'NodeJS-LTS'
-        // You can add other tools here too, like:
-        // jdk 'Java-17'
-        // maven 'Maven-3.9'
+        nodejs 'NodeJS-LTS' // Assuming 'NodeJS-LTS' is configured in Jenkins Global Tool Config to point to v18, v20 or v22
     }
-
     stages {
-        stage('Check Version') {
-            steps {
-                sh 'node --version'
-                sh 'npm --version'
-            }
-        }
         stage('Build') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
-                echo 'Running npm install...'
-                sh 'npm install' // npm commands are now available in PATH
-                echo 'Running build...'
-                sh 'npm run build' // Example build command
+                sh 'node -v'
+                sh 'npm install'
+                // ... other build steps
             }
         }
-        // Add other stages like Test, Deploy, etc.
     }
 }
