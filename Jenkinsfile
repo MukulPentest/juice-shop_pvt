@@ -17,12 +17,12 @@ pipeline {
 
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'nvd-api-key')]) {
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'nvdsecret')]) {
                     
                     echo "Running OWASP Dependency-Check with NVD API Key..."
                     
                     dependencyCheck additionalArguments: """ // Using triple double quotes for multi-line string
-                        --nvdApiKey '${nvd-api-key}' // Pass the key securely
+                        --nvdApiKey '${nvdsecret}' // Pass the key securely
                         --failOnCVSS 7 // Example: Optionally fail build on high severity CVEs
                         -o './dependency-check-reports' // Output to a dedicated directory
                         -s './' // Scan source/dependency files here
