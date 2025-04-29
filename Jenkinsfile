@@ -54,7 +54,11 @@ pipeline {
              steps {
                  echo "Building application..."
                  // Assumes a 'build' script in package.json
-                 sh 'npm run build' 
+                 sh 'npm run build:server'
+                 // Then build the frontend
+                 sh 'npm run build:frontend'
+                  // Or combine if order doesn't matter and you want fewer 'sh' steps
+                  // sh 'npm run build:server && npm run build:frontend'
              }
         }
 
